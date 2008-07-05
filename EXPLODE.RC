@@ -1,0 +1,88 @@
+//Microsoft App Studio generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "explode.h"
+
+/////////////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+
+//////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+EXPLODE                 ICON    DISCARDABLE     "EXPLODE.ICO"
+
+//////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+EXPLODE ACCELERATORS MOVEABLE PURE 
+BEGIN
+    "1",            ID1PLAY,                ASCII,  ALT, NOINVERT
+    "2",            ID2PLAY,                ASCII,  ALT, NOINVERT
+    "H",            IDHELP,                 VIRTKEY,ALT, NOINVERT
+    "L",            IDLOAD,                 VIRTKEY,ALT, NOINVERT
+    "N",            IDNEW,                  VIRTKEY,ALT, NOINVERT
+    "S",            IDSAVE,                 VIRTKEY,ALT, NOINVERT
+    VK_F1,          IDHELP,                 VIRTKEY,NOINVERT
+    "X",            IDEXIT,                 VIRTKEY,ALT, NOINVERT
+END
+
+
+//////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_ERR_REGISTER_CLASS  "Error registering window class"
+    IDS_ERR_CREATE_WINDOW   "Window creation failed!"
+END
+
+#ifdef APSTUDIO_INVOKED
+//////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#include ""explode.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+/////////////////////////////////////////////////////////////////////////////////////
+#endif    // APSTUDIO_INVOKED
+
+
+#ifndef APSTUDIO_INVOKED
+////////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
