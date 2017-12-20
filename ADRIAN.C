@@ -3,11 +3,9 @@
 #include <string.h>
 #include "adrian.h"
 
-#define contemplate_move_macro(x, y) if (order_grid[x][y] = TRUE, contemplate_move(levelnumber, gridptr, sign, minimum, x, y, &maximum, &max_x, &max_y, result_x != NULL)) goto end
+#define contemplate_move_macro(x, y) if (order_grid[x][y] = TRUE, contemplate_move(levelnumber, gridptr, sign, minimum, x, y, &maximum, &max_x, &max_y)) goto end
 
 #define max 3
-
-#define SQUARE_VALUES 0
 
 #define PLAYER -1
 
@@ -15,7 +13,7 @@ static int grids[max][6][6];
 
 static int level(int, grid_array *, int, int, int *, int *);
 
-BOOL won(grid_array *gridptr, int *sign)
+BOOL won_or_empty(grid_array *gridptr, int *sign)
 {
         int x, y;
         BOOL only_neg, only_pos;
@@ -43,19 +41,17 @@ static int new_level(int levelnumber, grid_array *gridptr, int sign, int minimum
 
         memcpy(new_gridptr, gridptr, sizeof(int [6][6]));
         (*new_gridptr)[xn][yn] += sign;
-        adrian_processgrid(new_gridptr);
+        explode(new_gridptr);
         return (level(new_level, new_gridptr, -sign, minimum, NULL, NULL));
 }
 
-static BOOL contemplate_move(int levelnumber, grid_array *gridptr, int sign, int minimum, int x, int y, int *maximum, int *max_x, int *max_y, BOOL print)        /* TRUE = skip to end */
+static BOOL contemplate_move(int levelnumber, grid_array *gridptr, int sign, int minimum, int x, int y, int *maximum, int *max_x, int *max_y)        /* TRUE = skip to end */
 {
         int new_value;
 
         if (((*gridptr)[x][y] * sign) >= 0)                                /* ie. valid move */
         {
                 new_value = new_level(levelnumber, gridptr, sign, *maximum, x, y);
-                if (print)
-                        DEBUG_PRINT3("Testing %d %d: %6d ", x, y, new_value);
                 if (sign == 1)
                 {
                         if (new_value > *maximum)        /* we are maximising: we will return this or higher.  However, this or higher will never be chosen by above */
@@ -81,45 +77,45 @@ static int level(int levelnumber, grid_array *gridptr, int sign, int minimum, in
         int win_sign;
         int maximum;
         int max_x = 5, max_y = 0;
-        int order_grid[6][6];
+        int order_grid[6][6];    /* Have we already tried this square? */
 
-        if (won(gridptr, &win_sign)) return (win_sign * 10000);
+        if (won_or_empty(gridptr, &win_sign)) return (win_sign * 10000);
 
-        for (loop = order_grid[0], x = 36; x; x--) *loop++ = FALSE;
+        for (loop = order_grid[0], x = 36; x; x--) *loop++ = FALSE;   /* Weird loop for efficiency */
 
         if (levelnumber == max-1)
         {
+                /* Static board analysis: Just sum our values vs theirs */
                 maximum = 0;
                 for (x = 0; x < 6; x++)
                         for (y = 0; y < 6; y++)
-                                if (SQUARE_VALUES)
-                                {
-                                        win_sign = (*gridptr)[x][y];
-                                        if (win_sign > 0) maximum += win_sign * win_sign;
-                                        else if (win_sign < 0) maximum -= win_sign * win_sign;
-                                } else
-                                        maximum += (*gridptr)[x][y];
+                                maximum += (*gridptr)[x][y];
         } else {
+                /* For alpha-beta pruning, try most likely squares first, to improve performance */
                 maximum = -20000 * sign;
 
+                /* Try corners first */
                 contemplate_move_macro(0, 0); contemplate_move_macro(0, 5);
                 contemplate_move_macro(5, 0); contemplate_move_macro(5, 5);
 
+                /* Then sides */
                 for (x = 1; x < 5; x++)
                 {
                         contemplate_move_macro(x, 0); contemplate_move_macro(x, 5);
                         contemplate_move_macro(0, x); contemplate_move_macro(5, x);
                 }
                 
+                /* Then those squares that already have pieces */
                 for (x = 1; x < 5; x++)
                         for (y = 1; y < 5; y++)
                                 if ((*gridptr)[x-1][y] || (*gridptr)[x+1][y] || (*gridptr)[x][y-1] || (*gridptr)[x][y+1] || (*gridptr)[x][y])
                                         contemplate_move_macro(x, y);
 
+                /* Then the rest */
                 for (x = 0; x < 6; x++)
                         for (y = 0; y < 6; y++)
                                 if (order_grid[x][y] == FALSE)
-                                        if (contemplate_move(levelnumber, gridptr, sign, minimum, x, y, &maximum, &max_x, &max_y, result_x != NULL)) goto end;
+                                        if (contemplate_move(levelnumber, gridptr, sign, minimum, x, y, &maximum, &max_x, &max_y)) goto end;
 
                 if (maximum == -20000 * sign)                                                   /* oh dear */
                         ERROR("There is no legal computer move (program may produce erroneous results henceforth)");
@@ -129,7 +125,7 @@ end:    if (result_x) { *result_x = max_x; *result_y = max_y; }
         return (maximum);
 }
 
-static void first_move(grid_array *gridptr, int *result_x, int *result_y)
+static void first_move(int *result_x, int *result_y)
 {
         int x, y;
         BOOL left;
@@ -151,8 +147,8 @@ static void think(int *result_x, int *result_y)
                 for (y = 0; y < 6; y++)
                         grids[0][x][y] = grid[x][y];
 
-        if (won((grid_array *) &grids[0][0][0], &x))
-                first_move((grid_array *) &grids[0][0][0], result_x, result_y);
+        if (won_or_empty((grid_array *) &grids[0][0][0], &x))
+                first_move(result_x, result_y);
         else
                 level(0, (grid_array *) &grids[0][0][0], PLAYER, PLAYER * 30000, result_x, result_y);
 }
@@ -171,7 +167,6 @@ void compgo(HWND hWnd)
         grid[x][y]--;
         drawbomb(hDC, hWnd, x, y);
         turn = (PLAYER == -1) ? RED : BLUE;
-        DEBUG_PRINT("\n\nRedrawing...");
         if (processgrid(hDC, hWnd)) turn = GAMEOVER;
 
         temp.left = 6; temp.right = 140;

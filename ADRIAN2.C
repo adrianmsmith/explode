@@ -1,8 +1,4 @@
-/* Adrian - processing */
-
 #include "adrian.h"
-
-static grid_array *gridptr;
 
 static void do1(grid_array *gridptr, int sign, int x, int y)
 {
@@ -32,12 +28,10 @@ static void over(grid_array *gridptr, BOOL *finished, int max, int x, int y, int
         }
 }
 
-void adrian_processgrid(grid_array *grid)
+void explode(grid_array *grid)
 {
         int x, y;
         BOOL finished;
-
-        gridptr = grid;
 
         do
         {
@@ -55,10 +49,6 @@ void adrian_processgrid(grid_array *grid)
                 for (y=1; y<5; y++) over(grid, &finished, 2, 5,y, 5,y-1, 5,y+1, 4,y, -1,-1);
                 over(grid, &finished, 1, 5,5, 4,5, 5,4, -1,-1, -1,-1);
 
-                if (won(grid, &x))
-                {
-                        DEBUG_PRINT("***WIN IN PROCESSGRID***\n");
-                        break;
-                }
+                if (won_or_empty(grid, &x)) break;
         } while (!finished);
 }
