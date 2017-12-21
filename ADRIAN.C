@@ -1,4 +1,4 @@
-/* Adrian - this is my bit */
+/* This code was originally written in 1994 when I was at school. */
 
 #include <string.h>
 #include <stdio.h>

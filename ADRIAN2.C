@@ -1,3 +1,5 @@
+/* This code was originally written in 1994 when I was at school. */
+
 #include "adrian.h"
 
 static void do1(grid_array *gridptr, int sign, int x, int y)

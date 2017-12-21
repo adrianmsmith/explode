@@ -1,4 +1,4 @@
-/* AdrExplode.h */
+/* This code was originally written in 1994 when I was at school. */
 
 //#include "windows.h"
 
