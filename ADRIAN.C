@@ -1,6 +1,7 @@
 /* Adrian - this is my bit */
 
 #include <string.h>
+#include <stdio.h>
 #include "adrian.h"
 
 #define contemplate_move_macro(x, y) if (order_grid[x][y] = TRUE, contemplate_move(levelnumber, gridptr, sign, minimum, x, y, &maximum, &max_x, &max_y)) goto end
@@ -153,33 +154,51 @@ static void think(int *result_x, int *result_y)
                 level(0, (grid_array *) &grids[0][0][0], PLAYER, PLAYER * 30000, result_x, result_y);
 }
 
-void compgo(HWND hWnd)
-{
-        HDC hDC;
-        int x, y;
-        RECT temp;              /* original salih name */
-        LPSTR string;
+void print_grid() {
+    int x, y;
+    for (y = 0; y < 6; y++) {
+        for (x = 0; x < 6; x++)
+            printf(" %2d", grid[y][x]);
+        printf("\n");
+    }
+}
 
-        hDC = GetDC(hWnd);
+void main() {
+    int x, y, won;
+
+    for (x = 0; x < 6; x++)
+        for (y = 0; y < 6; y++)
+            grid[x][y] = 0;
+
+    int first = 1;
+    while (1) {
+        printf("Your move x (0..5)? ");
+        scanf("%d", &x);
+        printf("Your move y (0..5)? ");
+        scanf("%d", &y);
+
+        grid[y][x]++;
+        explode(grid);
+        print_grid();
+        if (!first) {
+            if (won_or_empty(&grid, &won)) {
+                printf("Sign %d won.", won);
+                return;
+            }
+        }
 
         think(&x, &y);
+        printf("Computer chooses (%d,%d)\n", x, y);
+        grid[y][x]--;
+        explode(grid);
+        print_grid();
+        if (!first) {
+            if (won_or_empty(&grid, &won)) {
+                printf("Sign %d won.", won);
+                return;
+            }
+        }
 
-        grid[x][y]--;
-        drawbomb(hDC, hWnd, x, y);
-        turn = (PLAYER == -1) ? RED : BLUE;
-        if (processgrid(hDC, hWnd)) turn = GAMEOVER;
-
-        temp.left = 6; temp.right = 140;
-        temp.top = 50; temp.bottom = 80;
-        FillRect(hDC, &temp, LtGreyBrush);
-        SetBkColor(hDC, RGB(192, 192, 192));
-        SetTextColor(hDC, RGB(255, 0, 0));
-        string = rturn;
-        if (turn == GAMEOVER) {
-                SetTextColor(hDC, RGB(0, 0, 0));
-                string = gmover;
-                }
-        SelectObject(hDC, playerfont);
-        TextOut(hDC, 10, 58, string, _fstrlen(string));
-        ReleaseDC(hWnd, hDC);
+        first = 0;
+    }
 }
