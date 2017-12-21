@@ -4,15 +4,15 @@
 #include <stdio.h>
 #include "adrian.h"
 
-#define contemplate_move_macro(x, y) if (order_grid[x][y] = TRUE, contemplate_move(levelnumber, gridptr, sign, minimum, x, y, &maximum, &max_x, &max_y)) goto end
+#define contemplate_move_macro(x, y) if (order_grid[x][y] = TRUE, contemplate_move(levelnumber, gridptr, recursionDepth, sign, minimum, x, y, &maximum, &max_x, &max_y)) goto end
 
-#define max 3
+#define gridArraySize 10
 
 #define PLAYER -1
 
-static int grids[max][6][6];
+static int grids[gridArraySize][6][6];
 
-static int level(int, grid_array *, int, int, int *, int *);
+static int level(int, grid_array *, int, int, int, int *, int *);
 
 BOOL won_or_empty(grid_array *gridptr, int *sign)
 {
@@ -33,7 +33,7 @@ BOOL won_or_empty(grid_array *gridptr, int *sign)
         return (TRUE);
 }
 
-static int new_level(int levelnumber, grid_array *gridptr, int sign, int minimum, int xn, int yn)
+static int new_level(int levelnumber, grid_array *gridptr, int recursionDepth, int sign, int minimum, int xn, int yn)
 {
         int new_level = levelnumber + 1;
         grid_array *new_gridptr;
@@ -43,16 +43,16 @@ static int new_level(int levelnumber, grid_array *gridptr, int sign, int minimum
         memcpy(new_gridptr, gridptr, sizeof(int [6][6]));
         (*new_gridptr)[xn][yn] += sign;
         explode(new_gridptr);
-        return (level(new_level, new_gridptr, -sign, minimum, NULL, NULL));
+        return (level(new_level, new_gridptr, recursionDepth, -sign, minimum, NULL, NULL));
 }
 
-static BOOL contemplate_move(int levelnumber, grid_array *gridptr, int sign, int minimum, int x, int y, int *maximum, int *max_x, int *max_y)        /* TRUE = skip to end */
+static BOOL contemplate_move(int levelnumber, grid_array *gridptr, int recursionDepth, int sign, int minimum, int x, int y, int *maximum, int *max_x, int *max_y)        /* TRUE = skip to end */
 {
         int new_value;
 
         if (((*gridptr)[x][y] * sign) >= 0)                                /* ie. valid move */
         {
-                new_value = new_level(levelnumber, gridptr, sign, *maximum, x, y);
+                new_value = new_level(levelnumber, gridptr, recursionDepth, sign, *maximum, x, y);
                 if (sign == 1)
                 {
                         if (new_value > *maximum)        /* we are maximising: we will return this or higher.  However, this or higher will never be chosen by above */
@@ -72,7 +72,7 @@ static BOOL contemplate_move(int levelnumber, grid_array *gridptr, int sign, int
         return (FALSE);
 }
 
-static int level(int levelnumber, grid_array *gridptr, int sign, int minimum, int *result_x, int *result_y)
+static int level(int levelnumber, grid_array *gridptr, int recursionDepth, int sign, int minimum, int *result_x, int *result_y)
 {
         int x, y, *loop;
         int win_sign;
@@ -84,7 +84,7 @@ static int level(int levelnumber, grid_array *gridptr, int sign, int minimum, in
 
         for (loop = order_grid[0], x = 36; x; x--) *loop++ = FALSE;   /* Weird loop for efficiency */
 
-        if (levelnumber == max-1)
+        if (levelnumber == recursionDepth)
         {
                 /* Static board analysis: Just sum our values vs theirs */
                 maximum = 0;
@@ -116,7 +116,7 @@ static int level(int levelnumber, grid_array *gridptr, int sign, int minimum, in
                 for (x = 0; x < 6; x++)
                         for (y = 0; y < 6; y++)
                                 if (order_grid[x][y] == FALSE)
-                                        if (contemplate_move(levelnumber, gridptr, sign, minimum, x, y, &maximum, &max_x, &max_y)) goto end;
+                                        if (contemplate_move(levelnumber, gridptr, recursionDepth, sign, minimum, x, y, &maximum, &max_x, &max_y)) goto end;
 
                 if (maximum == -20000 * sign)                                                   /* oh dear */
                         ERROR("There is no legal computer move (program may produce erroneous results henceforth)");
@@ -140,7 +140,7 @@ static void first_move(int *result_x, int *result_y)
         *result_y = 0;
 }
 
-static void think(int *result_x, int *result_y)
+static void think(int recursionDepth, int *result_x, int *result_y)
 {
         int x, y;
 
@@ -151,7 +151,7 @@ static void think(int *result_x, int *result_y)
         if (won_or_empty((grid_array *) &grids[0][0][0], &x))
                 first_move(result_x, result_y);
         else
-                level(0, (grid_array *) &grids[0][0][0], PLAYER, PLAYER * 30000, result_x, result_y);
+                level(0, (grid_array *) &grids[0][0][0], recursionDepth, PLAYER, PLAYER * 30000, result_x, result_y);
 }
 
 void print_grid() {
@@ -164,11 +164,14 @@ void print_grid() {
 }
 
 void main() {
-    int x, y, won;
+    int x, y, won, recursionDepth;
 
     for (x = 0; x < 6; x++)
         for (y = 0; y < 6; y++)
             grid[x][y] = 0;
+
+    printf("Difficulty (1..%d)? ", gridArraySize-1);
+    scanf("%d", &recursionDepth);
 
     int first = 1;
     while (1) {
@@ -187,7 +190,7 @@ void main() {
             }
         }
 
-        think(&x, &y);
+        think(recursionDepth, &x, &y);
         printf("Computer chooses (%d,%d)\n", x, y);
         grid[y][x]--;
         explode(grid);

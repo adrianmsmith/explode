@@ -11,6 +11,10 @@ public class Game {
         val grid = new Grid();
         val humanPlayer = Player.positive;
         boolean firstMove = true;  // After one player has placed one move, they appear to have "won"
+
+        System.out.print("Difficulty (1..5 or higher): ");
+        int recursionDepth = stdin.nextInt();
+
         while (true) {
             System.out.print(grid.toString());
 
@@ -32,13 +36,13 @@ public class Game {
 
             System.out.print(grid.toString());
             if ( ! firstMove) {
-                val won2 = grid.hasWon();
-                if (won2 != null) {
-                    System.out.println("Player " + won2 + " has won");
+                val won = grid.hasWon();
+                if (won != null) {
+                    System.out.println("Player " + won + " has won");
                     return;
                 }
             }
-            Coordinates c = new Algorithm().play(grid, humanPlayer.getOther(), 5);
+            Coordinates c = new Algorithm().play(grid, humanPlayer.getOther(), recursionDepth);
             System.out.println("Computer has chosen (" + c.x + "," + c.y + ")");
 
             grid.value[c.x][c.y]--;
