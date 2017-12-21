@@ -8,20 +8,17 @@ import static java.lang.Integer.MIN_VALUE;
 public enum Player {
     negative(-1) {
         public @Nonnull Player getOther() { return positive; }
-        public int getMinimum() { return MAX_VALUE; }
-        public int getMaximum() { return MIN_VALUE; }
     },
     positive(+1) {
         public @Nonnull Player getOther() { return negative; }
-        public int getMinimum() { return MIN_VALUE; }
-        public int getMaximum() { return MAX_VALUE; }
     };
 
     final int sign;
 
-    Player(int s) { sign = s; }
+    Player(int s) { sign = s;}
+
+    public int getMinimum() { return -sign * 10_000; }
+    public int getMaximum() { return +sign * 10_000; }
 
     public abstract @Nonnull Player getOther();
-    public abstract int getMinimum();
-    public abstract int getMaximum();
 }
