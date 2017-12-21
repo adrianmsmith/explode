@@ -87,7 +87,7 @@ public class Algorithm {
             newGrid.value[c.x][c.y] += player.sign;
             newGrid.explode();
 
-            stack.push(grid);
+            stack.push(newGrid);
             val resultOfOtherPlayer = tryAllMovesAndSelectBest(stack, recursionDepth, bestScore, player.getOther());
             stack.pop();
 

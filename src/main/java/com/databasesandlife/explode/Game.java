@@ -38,7 +38,7 @@ public class Game {
                     return;
                 }
             }
-            Coordinates c = new Algorithm().play(grid, humanPlayer.getOther(), 7);
+            Coordinates c = new Algorithm().play(grid, humanPlayer.getOther(), 5);
             System.out.println("Computer has chosen (" + c.x + "," + c.y + ")");
 
             grid.value[c.x][c.y]--;
