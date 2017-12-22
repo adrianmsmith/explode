@@ -156,11 +156,24 @@ static void think(int recursionDepth, int *result_x, int *result_y)
 
 void print_grid() {
     int x, y;
+
+    printf("\n");
+
+    printf("    |", "");
+    for (x = 0; x < 6; x++) printf("%2d ", x);
+    printf("\n");
+
+    printf("----+");
+    for (x = 0; x < 6; x++) printf("---");
+    printf("\n");
+
     for (y = 0; y < 6; y++) {
-        for (x = 0; x < 6; x++)
-            printf(" %2d", grid[x][y]);
+        printf("%3d |", y);
+        for (x = 0; x < 6; x++) printf("%2d ", grid[x][y]);
         printf("\n");
     }
+
+    printf("\n");
 }
 
 void main() {

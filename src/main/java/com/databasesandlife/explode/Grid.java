@@ -74,11 +74,22 @@ class Grid implements Cloneable {
 
     @Override public @Nonnull String toString() {
         val result = new StringBuilder();
+        result.append("\n");
+        result.append("    |");
+        for (int x = 0; x < width; x++)
+            result.append(String.format("%2d ", x));
+        result.append("\n");
+        result.append("----+");
+        for (int x = 0; x < width; x++)
+            result.append("---");
+        result.append("\n");
         for (int y = 0; y < width; y++) {
+            result.append(String.format("%3d |", y));
             for (int x = 0; x < width; x++)
                 result.append(String.format("%2d ", value[x][y]));
             result.append("\n");
         }
+        result.append("\n");
         return result.toString();
     }
 }
