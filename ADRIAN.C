@@ -158,7 +158,7 @@ void print_grid() {
     int x, y;
     for (y = 0; y < 6; y++) {
         for (x = 0; x < 6; x++)
-            printf(" %2d", grid[y][x]);
+            printf(" %2d", grid[x][y]);
         printf("\n");
     }
 }
@@ -180,7 +180,7 @@ void main() {
         printf("Your move y (0..5)? ");
         scanf("%d", &y);
 
-        grid[y][x]++;
+        grid[x][y]++;
         explode(grid);
         print_grid();
         if (!first) {
@@ -192,7 +192,7 @@ void main() {
 
         think(recursionDepth, &x, &y);
         printf("Computer chooses (%d,%d)\n", x, y);
-        grid[y][x]--;
+        grid[x][y]--;
         explode(grid);
         print_grid();
         if (!first) {
