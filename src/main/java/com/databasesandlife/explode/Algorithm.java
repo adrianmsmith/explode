@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
-import static com.databasesandlife.explode.Grid.width;
+import static com.databasesandlife.explode.Board.size;
 import static java.lang.Math.abs;
 
 public class Algorithm {
@@ -20,48 +20,48 @@ public class Algorithm {
         int score;
     }
 
-    protected @Nonnull List<Coordinates> getCoordinatesToAttempt(@Nonnull Grid grid, @Nonnull Player player) {
+    protected @Nonnull List<Coordinates> getCoordinatesToAttempt(@Nonnull Board board, @Nonnull Player player) {
         val result = new ArrayList<Coordinates>();
 
         // Try corners first
         result.add(new Coordinates(0, 0));
-        result.add(new Coordinates(0, width-1));
-        result.add(new Coordinates(width-1, 0));
-        result.add(new Coordinates(width-1, width-1));
+        result.add(new Coordinates(0, size -1));
+        result.add(new Coordinates(size -1, 0));
+        result.add(new Coordinates(size -1, size -1));
 
         // Try edges next
-        for (int i = 1; i < width-1; i++) {
+        for (int i = 1; i < size -1; i++) {
             result.add(new Coordinates(i, 0));
-            result.add(new Coordinates(i, width-1));
+            result.add(new Coordinates(i, size -1));
             result.add(new Coordinates(0, i));
-            result.add(new Coordinates(width-1, i));
+            result.add(new Coordinates(size -1, i));
         }
 
         // Try squares we already have pieces
-        for (int x = 0; x < width; x++)
-            for (int y = 0; y < width; y++)
-                if (player.sign * grid.value[x][y] > 0)
+        for (int x = 0; x < size; x++)
+            for (int y = 0; y < size; y++)
+                if (player.sign * board.value[x][y] > 0)
                     result.add(new Coordinates(x, y));
 
         // Try empty squares
-        for (int x = 0; x < width; x++)
-            for (int y = 0; y < width; y++)
-                if (grid.value[x][y] == 0)
+        for (int x = 0; x < size; x++)
+            for (int y = 0; y < size; y++)
+                if (board.value[x][y] == 0)
                     result.add(new Coordinates(x, y));
 
         return result;
     }
 
-    protected @Nonnull Result staticAnalysis(@Nonnull Grid grid) {
+    protected @Nonnull Result staticAnalysis(@Nonnull Board board) {
         int score = 0;
-        for (int x = 0; x < width; x++)
-            for (int y = 0; y < width; y++)
-                score += grid.value[x][y];
+        for (int x = 0; x < size; x++)
+            for (int y = 0; y < size; y++)
+                score += board.value[x][y];
         return new Result(new Coordinates(0,0), score);
     }
 
     protected @Nonnull Result tryAllMovesAndSelectBest(
-        @Nonnull Stack<Grid> stack, int recursionDepth, int threshold, @Nonnull Player player
+        @Nonnull Stack<Board> stack, int recursionDepth, int threshold, @Nonnull Player player
     ) {
         val grid = stack.peek();
 
@@ -103,9 +103,9 @@ public class Algorithm {
         return best;
     }
 
-    protected @Nonnull Coordinates play(@Nonnull Grid grid, @Nonnull Player player, int recursionDepth) {
-        val stack = new Stack<Grid>();
-        stack.push(grid);
+    protected @Nonnull Coordinates play(@Nonnull Board board, @Nonnull Player player, int recursionDepth) {
+        val stack = new Stack<Board>();
+        stack.push(board);
 
         val result = tryAllMovesAndSelectBest(stack, recursionDepth, player.getOther().getMinimum(), player);
         return result.c;

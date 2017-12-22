@@ -8,7 +8,7 @@ public class Game {
 
     public static void main(String[] args) {
         val stdin = new Scanner(System.in);
-        val grid = new Grid();
+        val grid = new Board();
         val humanPlayer = Player.positive;
         boolean firstMove = true;  // After one player has placed one move, they appear to have "won"
 
