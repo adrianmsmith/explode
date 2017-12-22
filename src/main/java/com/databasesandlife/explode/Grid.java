@@ -1,12 +1,9 @@
 package com.databasesandlife.explode;
 
-import lombok.Getter;
 import lombok.val;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.List;
 
 import static java.lang.Integer.signum;
 import static java.lang.Math.abs;
@@ -19,7 +16,7 @@ class Grid implements Cloneable {
 
     void explode() {
         x: while (true) {
-            if (hasWon() != null) return;
+            if (findWinningPlayerOrNull() != null) return;
             for (int x = 0; x < width; x++) {
                 for (int y = 0; y < width; y++) {
                     boolean marginY = y == 0 || y == width - 1;
@@ -49,19 +46,19 @@ class Grid implements Cloneable {
         return true;
     }
 
-    public @CheckForNull Player hasWon() {
-        boolean negativeHasWon = true;
-        boolean positiveHasWon = true;
+    public @CheckForNull Player findWinningPlayerOrNull() {
+        boolean negativeIsPresent = false;
+        boolean positiveIsPresent = false;
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < width; y++) {
                 int val = value[x][y];
-                if (val < 0) positiveHasWon = false;
-                if (val > 0) negativeHasWon = false;
+                if (val < 0) negativeIsPresent = true;
+                if (val > 0) positiveIsPresent = true;
             }
         }
-        if (negativeHasWon && positiveHasWon) return null;
-        if (negativeHasWon) return Player.negative;
-        if (positiveHasWon) return Player.positive;
+        if (negativeIsPresent && positiveIsPresent) return null;
+        if (negativeIsPresent) return Player.negative;
+        if (positiveIsPresent) return Player.positive;
         return null;
     }
 

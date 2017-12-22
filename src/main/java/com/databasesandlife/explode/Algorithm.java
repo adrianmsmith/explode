@@ -67,7 +67,7 @@ public class Algorithm {
 
         // One party has won?
         if (stack.size() > 1) {
-            val winner = grid.hasWon();
+            val winner = grid.findWinningPlayerOrNull();
             if (winner != null) return new Result(new Coordinates(0, 0), winner.getMaximum());
         }
 

@@ -19,7 +19,7 @@ public class Game {
             System.out.print(grid.toString());
 
             if ( ! firstMove) {
-                val won = grid.hasWon();
+                val won = grid.findWinningPlayerOrNull();
                 if (won != null) {
                     System.out.println("Player " + won + " has won");
                     return;
@@ -36,7 +36,7 @@ public class Game {
 
             System.out.print(grid.toString());
             if ( ! firstMove) {
-                val won = grid.hasWon();
+                val won = grid.findWinningPlayerOrNull();
                 if (won != null) {
                     System.out.println("Player " + won + " has won");
                     return;
