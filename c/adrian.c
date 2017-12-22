@@ -159,7 +159,7 @@ void print_grid() {
 
     printf("\n");
 
-    printf("    |", "");
+    printf("    |");
     for (x = 0; x < 6; x++) printf("%2d ", x);
     printf("\n");
 

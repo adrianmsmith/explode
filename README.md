@@ -4,7 +4,7 @@
 
 To run the C CLI
 
-    gcc -x c *.C -o explode && ./explode
+    gcc -O3 c/*.c -o explode && ./explode
 
 To run the Java CLI, 
 
