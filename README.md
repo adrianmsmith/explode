@@ -6,7 +6,7 @@ To run the C CLI
 
     gcc -O3 c/*.c -o explode && ./explode
 
-To run the Java CLI, 
+To run the Java CLI, using Java 8: (Java 9 does not work)
 
     mvn package && java -jar target/explode-1.0-SNAPSHOT.jar
 
